@@ -1,0 +1,7 @@
+{
+  "name": "ascend",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
