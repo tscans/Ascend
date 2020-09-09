@@ -33,7 +33,7 @@ class Setup extends React.Component<MyProps>{
             this.openAlert();
             return;
         }
-        vault.saveUser(this.state);
+        vault.saveUser(this.state.userInfo);
         this.props.history.push("/home");
     }
     changeValue = (key:string,value:string) =>{
@@ -129,7 +129,9 @@ class Setup extends React.Component<MyProps>{
                         </IonCardHeader>
                         <IonCardContent>
                             <IonItem>
-                                <IonInput value={weight} placeholder="Weight" onIonChange={e => this.changeValue("weight",e.detail.value!)}></IonInput>
+                                <IonInput 
+                                type={"number"} inputMode={"numeric"}
+                                value={weight} placeholder="Weight" onIonChange={e => this.changeValue("weight",e.detail.value!)}></IonInput>
                             </IonItem>
                         </IonCardContent>
                     </IonCard>
@@ -139,7 +141,9 @@ class Setup extends React.Component<MyProps>{
                         </IonCardHeader>
                         <IonCardContent>
                             <IonItem>
-                                <IonInput value={targetWeight} placeholder="Target Weight" onIonChange={e => this.changeValue("targetWeight",e.detail.value!)}></IonInput>
+                                <IonInput 
+                                type={"number"} inputMode={"numeric"}
+                                value={targetWeight} placeholder="Target Weight" onIonChange={e => this.changeValue("targetWeight",e.detail.value!)}></IonInput>
                             </IonItem>
                         </IonCardContent>
                     </IonCard>

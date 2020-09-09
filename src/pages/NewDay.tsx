@@ -4,6 +4,7 @@ IonCard,IonCardTitle,IonCardHeader,IonCardContent,IonToggle,
 IonCardSubtitle,IonInput,IonItem,IonButtons,IonBackButton,IonButton} from '@ionic/react';
 
 import vault from '../vault/vault';
+import calculation from '../calculation/calculation';
 
 class NewDay extends React.Component{
     state = {
@@ -14,7 +15,12 @@ class NewDay extends React.Component{
         numStairs:"",
         timeClimbing:"",
         extraCals:"",
-        weight:""
+        weight:"",
+        user:null
+    }
+    componentDidMount(){
+        let user = vault.getUser();
+        this.setState({user});
     }
     chooseToken = (i:number) =>{
         this.setState({chosenToken:i});
@@ -25,11 +31,15 @@ class NewDay extends React.Component{
         this.setState(currState);
     }
     submit = () =>{
-        let {weight,extraCals,timeClimbing,numStairs} = this.state;
-
+        let {weight,extraCals,timeClimbing,numStairs,user} = this.state;
+        
     }
     render(){
-        let {climbStairs,otherCals,recordWeight} = this.state;
+        let {climbStairs,otherCals,recordWeight,user,
+            numStairs,timeClimbing,extraCals} = this.state;
+        if(!user){
+            return <div/>
+        }
         return(
             <IonPage>
                 <IonContent fullscreen>
@@ -99,17 +109,27 @@ class NewDay extends React.Component{
                         <IonCardContent style={styles.breakdown}>
                             <span>
                                 Sedintary Burn<br/>
-                                <span style={styles.lfb}>2600</span>
+                                <span style={styles.lfb}>
+                                    {this.sedentaryBurn()}
+                                </span>
                             </span>
                             +
                             <span>
                                 Stair Climb<br/>
-                                <span style={styles.lfb}>2600</span>
+                                <span style={styles.lfb}>
+                                {calculation.stairsCalorieEstimate({
+                                    numStairs:parseFloat(numStairs),
+                                    minutesClimbing:parseInt(timeClimbing),
+                                    weight:this.getCurrentWeight()
+                                })}
+                                </span>
                             </span>
                             +
                             <span>
                                 Other Cals<br/>
-                                <span style={styles.lfb}>2600</span>
+                                <span style={styles.lfb}>
+                                    {extraCals || 0}
+                                </span>
                             </span>
                             -
                             <span>
@@ -171,18 +191,42 @@ class NewDay extends React.Component{
                     </IonCardHeader>
                     <IonCardContent>
                         <IonItem>
-                            <IonInput value={numStairs} placeholder="# of Stairs"
+                            <IonInput inputmode={"numeric"}
+                                value={numStairs} placeholder="# of Stairs"
                              onIonChange={e => this.checkItem("numStairs",e.detail.value)}></IonInput>
                         </IonItem>
                     </IonCardContent>
                     <IonCardHeader>
-                        <IonCardSubtitle>Time Climbing</IonCardSubtitle>
+                        <IonCardSubtitle>Minutes Climbing</IonCardSubtitle>
                     </IonCardHeader>
                     <IonCardContent>
                         <IonItem>
-                            <IonInput value={timeClimbing} placeholder="Time Climbing"
-                             onIonChange={e => this.checkItem("timeClimbing",e.detail.value)}></IonInput>
+                            <IonInput
+                            inputmode={"numeric"}
+                            value={timeClimbing} placeholder="Minutes Climbing"
+                            onIonChange={e => this.checkItem("timeClimbing",e.detail.value)}></IonInput>
                         </IonItem>
+                    </IonCardContent>
+                    <IonCardHeader>
+                        <IonCardSubtitle>Estimations</IonCardSubtitle>
+                    </IonCardHeader>
+                    <IonCardContent style={styles.topCards}>
+                        <div>
+                            Calories Burned:<br/>
+                            <span style={styles.estText}>
+                            {calculation.stairsCalorieEstimate({
+                                numStairs:parseFloat(numStairs),
+                                minutesClimbing:parseInt(timeClimbing),
+                                weight:this.getCurrentWeight()
+                            })}
+                            </span>
+                        </div>
+                        <div>
+                            Steps / Minute:<br/> 
+                            <span style={styles.estText}>
+                            {calculation.spmEst(parseFloat(numStairs),parseInt(timeClimbing))}
+                            </span>
+                        </div>
                     </IonCardContent>
                 </>
             )
@@ -198,7 +242,10 @@ class NewDay extends React.Component{
                     </IonCardHeader>
                     <IonCardContent>
                         <IonItem>
-                            <IonInput value={extraCals} placeholder="Extra Calories"
+                            <IonInput
+                            inputMode={"numeric"}
+                            type={"number"}
+                            value={extraCals} placeholder="Extra Calories"
                              onIonChange={e => this.checkItem("extraCals",e.detail.value)}></IonInput>
                         </IonItem>
                     </IonCardContent>
@@ -216,13 +263,31 @@ class NewDay extends React.Component{
                     </IonCardHeader>
                     <IonCardContent>
                         <IonItem>
-                            <IonInput value={weight} placeholder="Weight"
-                             onIonChange={e => this.checkItem("weight",e.detail.value)}></IonInput>
+                            <IonInput inputMode={"numeric"} type={"number"}
+                            value={weight} placeholder="Weight"
+                            onIonChange={e => this.checkItem("weight",e.detail.value)}></IonInput>
                         </IonItem>
                     </IonCardContent>
                 </>
             )
         }
+    }
+    getCurrentWeight = () =>{
+        let {weight,user} = this.state;
+        if(weight){
+            return parseFloat(weight);
+        }
+        let u : any = user;
+        return parseFloat(u.weight);
+    }
+    sedentaryBurn = () =>{
+        let u : any = this.state.user;
+        return calculation.basalMetabolicRateFormula({
+            gender:u.gender,
+            weight:parseFloat(u.weight),
+            height:parseInt(u.height),
+            age:calculation.getCurrentAge(u.yearBorn)
+        });
     }
 }
 
@@ -245,6 +310,9 @@ const styles = {
     },
     lfb:{
         fontSize:16
+    },
+    estText:{
+        fontSize:24,color:"white"
     }
 }
 
