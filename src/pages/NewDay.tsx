@@ -1,12 +1,16 @@
 import React from 'react';
 import {IonPage,IonContent,IonHeader,IonToolbar,IonTitle,
 IonCard,IonCardTitle,IonCardHeader,IonCardContent,IonToggle,
-IonCardSubtitle,IonInput,IonItem,IonButtons,IonBackButton,IonButton} from '@ionic/react';
+IonCardSubtitle,IonInput,IonItem,IonButtons,IonBackButton,IonButton,
+IonAlert} from '@ionic/react';
 
 import vault from '../vault/vault';
 import calculation from '../calculation/calculation';
+import {RouteComponentProps} from 'react-router';
 
-class NewDay extends React.Component{
+interface MyProps extends RouteComponentProps<{}> {}
+
+class NewDay extends React.Component<MyProps>{
     state = {
         chosenToken:null,
         climbStairs:false,
@@ -16,7 +20,8 @@ class NewDay extends React.Component{
         timeClimbing:"",
         extraCals:"",
         weight:"",
-        user:null
+        user:null,
+        alertOpen:false
     }
     componentDidMount(){
         let user = vault.getUser();
@@ -31,15 +36,53 @@ class NewDay extends React.Component{
         this.setState(currState);
     }
     submit = () =>{
-        let {weight,extraCals,timeClimbing,numStairs,user} = this.state;
-        
+        let {timeClimbing,numStairs,chosenToken} = this.state;
+        if(!chosenToken){
+            this.setState({alertOpen:true});
+            return;
+        }
+        let stairsBurn = calculation.stairsCalorieEstimate({
+            numStairs:parseFloat(numStairs),
+            minutesClimbing:parseInt(timeClimbing),
+            weight:this.getCurrentWeight()
+        });
+        vault.addNewDay({
+            dateTime:new Date(),
+            stairsClimed:parseInt(numStairs) || 0,
+            minutesSpentClimbing:parseInt(timeClimbing) || 0,
+            calIntakeTarget:chosenToken || 1,
+            calsBurnedStairs:stairsBurn,
+            weight:this.getCurrentWeight(),
+            dayOfTheWeek:(new Date()).getDay()
+        });
+        this.props.history.push("/home");
+    }
+    getTargetCalories = () =>{
+        let {user} = this.state;
+        let u : any = user;
+        console.log(u)
+        return calculation.targetCalories({
+            gender:u.gender,
+            weight:parseFloat(u.weight),
+            height:parseInt(u.height),
+            age:calculation.getCurrentAge(u.yearBorn)
+        });
     }
     render(){
         let {climbStairs,otherCals,recordWeight,user,
-            numStairs,timeClimbing,extraCals} = this.state;
+            numStairs,timeClimbing,extraCals:exc,alertOpen} = this.state;
         if(!user){
             return <div/>
         }
+        let targetCalories = this.getTargetCalories();
+        let sedentary = this.sedentaryBurn();
+        let stairsBurn = calculation.stairsCalorieEstimate({
+            numStairs:parseFloat(numStairs),
+            minutesClimbing:parseInt(timeClimbing),
+            weight:this.getCurrentWeight()
+        });
+        let eating = this.userChoiceCals();
+        let extraCals = parseInt(exc) || 0;
         return(
             <IonPage>
                 <IonContent fullscreen>
@@ -57,7 +100,7 @@ class NewDay extends React.Component{
                                 Today's Caloric Goal
                             </IonCardContent>
                             <IonCardHeader style={{textAlign:'center',paddingTop:0}}>
-                                <IonCardTitle>1600 cals</IonCardTitle>
+                                <IonCardTitle>{targetCalories.one} cals</IonCardTitle>
                             </IonCardHeader>
                         </IonCard>
                         <IonCard  style={{width:"50%"}}>
@@ -110,36 +153,36 @@ class NewDay extends React.Component{
                             <span>
                                 Sedintary Burn<br/>
                                 <span style={styles.lfb}>
-                                    {this.sedentaryBurn()}
+                                    {sedentary}
                                 </span>
                             </span>
                             +
                             <span>
                                 Stair Climb<br/>
                                 <span style={styles.lfb}>
-                                {calculation.stairsCalorieEstimate({
-                                    numStairs:parseFloat(numStairs),
-                                    minutesClimbing:parseInt(timeClimbing),
-                                    weight:this.getCurrentWeight()
-                                })}
+                                {stairsBurn}
                                 </span>
                             </span>
                             +
                             <span>
                                 Other Cals<br/>
                                 <span style={styles.lfb}>
-                                    {extraCals || 0}
+                                    {extraCals}
                                 </span>
                             </span>
                             -
                             <span>
                                 Eating<br/>
-                                <span style={styles.lfb}>2600</span>
+                                <span style={styles.lfb}>
+                                    {eating}
+                                </span>
                             </span>
                             =
                             <span>
                                 Burned<br/>
-                                <span style={styles.lfb}>2600</span>
+                            <span style={styles.lfb}>
+                                {this.burnedCalsCalc(sedentary,stairsBurn,extraCals,eating)}
+                            </span>
                             </span>
                         </IonCardContent>
                     </IonCard>
@@ -147,11 +190,19 @@ class NewDay extends React.Component{
                     style={{margin:20}}
                     color="primary" expand="block" onClick={this.submit}>Submit</IonButton>
                     <div style={{height:60}}/>
+                    <IonAlert
+                        isOpen={alertOpen}
+                        onDidDismiss={() => this.setState({alert:false})}
+                        header={'Warning'}
+                        message={'Please select caloric intake'}
+                        buttons={['OK']}
+                    />
                 </IonContent>
             </IonPage>
         )
     }
     renderTokens = () =>{
+        let targetCalories :any = this.getTargetCalories();
         let {chosenToken} = this.state;
         return [1,2,3,4].map((i)=>{
             let tokenColor = `hsl(${(180 - ((i-1)*60))},100%,70%)`;
@@ -175,7 +226,7 @@ class NewDay extends React.Component{
                         marginTop:5,
                         textAlign:'center'
                     }}>
-                        Closer To<br/>1600
+                        {mapper[`${i}-m`]}<br/>{targetCalories[mapper[i]]}
                     </div>
                 </div>
             )
@@ -289,6 +340,18 @@ class NewDay extends React.Component{
             age:calculation.getCurrentAge(u.yearBorn)
         });
     }
+    userChoiceCals = () =>{
+        let chosenToken :any = this.state.chosenToken;
+        if(!chosenToken){
+            return 0;
+        }
+        let targetCalories :any = this.getTargetCalories();
+        return targetCalories[mapper[chosenToken]];
+    }
+    burnedCalsCalc = (sedentary:number,stairsBurn:number,extraCals:number,eating:number) =>{
+        
+        return sedentary + stairsBurn + extraCals - eating;
+    }
 }
 
 const styles = {
@@ -315,5 +378,16 @@ const styles = {
         fontSize:24,color:"white"
     }
 }
+
+const mapper :any= {
+    "1":"one",
+    '2':"two",
+    '3':"three",
+    '4':"four",
+    '1-m':"At or Lower",
+    '2-m':"Closer to",
+    '3-m':"Closer to",
+    '4-m':"At or above"
+};
 
 export default NewDay;

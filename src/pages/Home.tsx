@@ -1,22 +1,25 @@
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar,
-IonSpinner } from '@ionic/react';
+IonSpinner,IonFab,IonFabButton,IonIcon,IonButtons } from '@ionic/react';
 import React from 'react';
 import './Home.css';
 import vault from '../vault/vault';
 import {RouteComponentProps} from 'react-router';
+import {add,personCircle} from 'ionicons/icons';
 
 interface MyProps extends RouteComponentProps<{}> {}
 
 class Home extends React.Component<MyProps>{
     state = {
-        userInfo:null
+        userInfo:null,
+        userData:null
     }
     componentDidMount(){
-        this.grabUser()
+        this.grabUser();
+        this.grabUserData();
     }
     render(){
         console.log(this.state);
-        if(!this.state.userInfo){
+        if(!this.state.userInfo || !this.state.userData){
             return(
                 <IonSpinner name="crescent" />
             )
@@ -25,11 +28,19 @@ class Home extends React.Component<MyProps>{
             <IonPage>
                 <IonContent fullscreen>
                     <IonHeader>
-                    <IonToolbar>
-                        <IonTitle>Ascend</IonTitle>
-                    </IonToolbar>
+                        <IonToolbar>
+                            <IonTitle>Ascend</IonTitle>
+                            <IonButtons slot="end">
+                                <IonIcon slot="icon-only" icon={personCircle} />
+                            </IonButtons>
+                        </IonToolbar>
                     </IonHeader>
 
+                    <IonFab vertical="bottom" horizontal="end" slot="fixed">
+                        <IonFabButton onClick={this.addDayData}>
+                            <IonIcon icon={add} />
+                        </IonFabButton>
+                    </IonFab>
                 </IonContent>
             </IonPage>
         )
@@ -41,6 +52,13 @@ class Home extends React.Component<MyProps>{
         }else{
             this.setState({userInfo:user});
         }
+    }
+    grabUserData = () =>{
+        let userData = vault.getDayData();
+        this.setState({userData});
+    }
+    addDayData = () =>{
+        this.props.history.push("/new-day");
     }
 }
 

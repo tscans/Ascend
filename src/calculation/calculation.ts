@@ -37,7 +37,7 @@ const calculation = {
         }
         return {
             one:mtc,
-            two:(bmr + mtc)/2,
+            two:bmr,
             three:bmr + caloricDifferential,
             four:bmr + (caloricDifferential*2)
         }
