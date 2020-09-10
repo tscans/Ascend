@@ -1,3 +1,6 @@
+const minimumCalories = 1200;
+const caloricDifferential = 500;
+
 
 const calculation = {
     basalMetabolicRateFormula: (bmrObj:bmrObj)=>{
@@ -23,12 +26,21 @@ const calculation = {
     },
     targetCalories:(bmrObj:bmrObj)=>{
         let bmr = calculation.basalMetabolicRateFormula({
-            gender: "",
-            weight:5,
-            height:5,
-            age:5
+            gender:bmrObj.gender,
+            weight:bmrObj.weight,
+            height:bmrObj.height,
+            age:bmrObj.age
         });
-
+        let mtc = bmr - caloricDifferential;
+        if(mtc < minimumCalories){
+            mtc = minimumCalories;
+        }
+        return {
+            one:mtc,
+            two:(bmr + mtc)/2,
+            three:bmr + caloricDifferential,
+            four:bmr + (caloricDifferential*2)
+        }
     },
     stairsCalorieEstimate:(stairsCalObj:stairsCalObj)=>{
         let spm = calculation.spmEst(stairsCalObj.numStairs,stairsCalObj.minutesClimbing);
