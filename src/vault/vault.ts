@@ -1,4 +1,6 @@
 import calculation from "../calculation/calculation";
+import moment from 'moment';
+import NewDay from "../pages/NewDay";
 
 const asyncParse = require("async-json-parse");
 
@@ -26,6 +28,9 @@ const vault = {
     reset:()=>{
         localStorage.clear();
     },
+    clearDayLogs:()=>{
+        localStorage.setItem(dayDataVault,JSON.stringify([]));
+    },
     randomId:()=>{
         return `id-${Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)}`;
     },
@@ -45,12 +50,35 @@ const vault = {
         return filteredDayLogs;
     },
     getDayData:async()=>{
-        return await asyncParse(localStorage.getItem(dayDataVault));
+        return (await asyncParse(localStorage.getItem(dayDataVault)));
     },
     getOneDayData:async(getId:string)=>{
         let dayLogs = await vault.getDayData();
         let oneDay = dayLogs.find((u:newDay)=>u.id === getId);
         return oneDay;
+    },
+    makeFakeData:(dataNum:number)=>{
+        if(!dataNum){
+            dataNum = 100;
+        }
+        vault.clearDayLogs();
+        let fakeLogs = [];
+        for(let i = 0; i < dataNum; i++){
+            fakeLogs.push({
+                id:vault.randomId(),
+                dateTime:moment(new Date()).subtract(i,"days").toDate(),
+                stairsClimed:Math.round(Math.random() * (4000 - 3000) + 3000),
+                minutesSpentClimbing:Math.round(Math.random() * (35 - 25) + 25),
+                calIntakeTarget:Math.round(Math.random() * (4 - 1) + 1),
+                calsBurnedStairs:Math.round(Math.random() * (900-700) + 700),
+                weight:Math.round(Math.random() * (220 - 200) + 200),
+                dayOfTheWeek:moment(new Date()).subtract(i,"days").toDate().getDay()
+            })
+        }
+        fakeLogs.reverse();
+        let strungLogs = JSON.stringify(fakeLogs);
+        localStorage.setItem(dayDataVault,strungLogs);
+        return fakeLogs;
     }
 }
 

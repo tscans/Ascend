@@ -1,3 +1,5 @@
+import { parse } from "path";
+
 const minimumCalories = 1200;
 const caloricDifferential = 500;
 
@@ -66,6 +68,37 @@ const calculation = {
     },
     getCurrentAge:(yearBorn:number)=>{
         return (new Date()).getFullYear() - yearBorn;
+    },
+    bmiCalculation:(weight:number,height:number)=>{
+        return parseFloat((703 * (weight/(Math.pow(height,2)))).toFixed(1));
+    },
+    bmiEvaluation:(bmi:number)=>{
+        if(bmi < 18.5){
+            return {
+                color:"purple",
+                evalu:"Underweight"
+            }
+        }else if(bmi <= 24.9){
+            return {
+                color:"green",
+                evalu:"Normal Weight"
+            }
+        }else if(bmi <= 29.9){
+            return {
+                color:"yellow",
+                evalu:"Overweight"
+            }
+        }else if(bmi <= 34.9){
+            return {
+                color:"red",
+                evalu:"Obese"
+            }
+        }else{
+            return {
+                color:"red",
+                evalu:"Very Obese"
+            }
+        }
     }
 };
 

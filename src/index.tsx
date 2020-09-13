@@ -5,5 +5,11 @@ import vault from './vault/vault';
 
 vault.initializeApp();
 
+declare global {
+    interface Window { vault: any; }
+}
+
+window.vault = vault;
+
 ReactDOM.render(<App />, document.getElementById('root'));
 
