@@ -67,12 +67,13 @@ const vault = {
             fakeLogs.push({
                 id:vault.randomId(),
                 dateTime:moment(new Date()).subtract(i,"days").toDate(),
-                stairsClimed:Math.round(Math.random() * (4000 - 3000) + 3000),
+                stairsClimbed:Math.round(Math.random() * (4000 - 3000) + 3000),
                 minutesSpentClimbing:Math.round(Math.random() * (35 - 25) + 25),
                 calIntakeTarget:Math.round(Math.random() * (4 - 1) + 1),
                 calsBurnedStairs:Math.round(Math.random() * (900-700) + 700),
                 weight:Math.round(Math.random() * (220 - 200) + 200),
-                dayOfTheWeek:moment(new Date()).subtract(i,"days").toDate().getDay()
+                dayOfTheWeek:moment(new Date()).subtract(i,"days").toDate().getDay(),
+                totalCaloriesBurned:Math.round(Math.random()*(1100-700)+700)
             })
         }
         fakeLogs.reverse();
@@ -85,10 +86,11 @@ const vault = {
 interface newDay{
     id?:string;
     dateTime:Date;
-    stairsClimed:number;
+    stairsClimbed:number;
     minutesSpentClimbing:number;
     calIntakeTarget:number;
     calsBurnedStairs:number;
+    totalCaloriesBurned:number;
     weight:number;
     dayOfTheWeek:number;
 }

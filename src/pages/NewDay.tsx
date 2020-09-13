@@ -36,7 +36,7 @@ class NewDay extends React.Component<MyProps>{
         this.setState(currState);
     }
     submit = () =>{
-        let {timeClimbing,numStairs,chosenToken} = this.state;
+        let {timeClimbing,numStairs,chosenToken,extraCals} = this.state;
         if(!chosenToken){
             this.setState({alertOpen:true});
             return;
@@ -46,14 +46,19 @@ class NewDay extends React.Component<MyProps>{
             minutesClimbing:parseInt(timeClimbing),
             weight:this.getCurrentWeight()
         });
+        let ec = parseInt(extraCals);
+        if(isNaN(ec)){
+            ec = 0;
+        }
         vault.addNewDay({
             dateTime:new Date(),
-            stairsClimed:parseInt(numStairs) || 0,
+            stairsClimbed:parseInt(numStairs) || 0,
             minutesSpentClimbing:parseInt(timeClimbing) || 0,
             calIntakeTarget:chosenToken || 1,
             calsBurnedStairs:stairsBurn,
             weight:this.getCurrentWeight(),
-            dayOfTheWeek:(new Date()).getDay()
+            dayOfTheWeek:(new Date()).getDay(),
+            totalCaloriesBurned:stairsBurn + ec
         });
         this.props.history.push("/home");
     }
