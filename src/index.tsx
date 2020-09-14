@@ -6,7 +6,10 @@ import vault from './vault/vault';
 vault.initializeApp();
 
 declare global {
-    interface Window { vault: any; }
+    interface Window { 
+        vault: any;
+        vaultListener:any;
+    }
 }
 
 window.vault = vault;

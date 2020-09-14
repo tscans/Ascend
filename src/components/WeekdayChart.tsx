@@ -13,10 +13,11 @@ class WeekdayChart extends React.Component<MyProps>{
     render(){
         let barData = this.generateData();
         let options = this.generateOptions();
-        console.log("segment",this.state.valueShown);
         return(
             <IonCard>
-                <IonSegment onIonChange={e => this.setState({valueShown:e.detail.value})}>
+                <IonSegment 
+                onIonChange={e => this.setState({valueShown:e.detail.value})}
+                value={this.state.valueShown}>
                     <IonSegmentButton value="stairs">
                         <IonLabel>Stair Count</IonLabel>
                     </IonSegmentButton>
@@ -57,7 +58,6 @@ class WeekdayChart extends React.Component<MyProps>{
             totalCals[position] = totalCals[position] / count;
         });
         let usedData = stairsClimbed;
-        console.log(usedData,valueShown)
         if(valueShown === "consume"){
             usedData = intakeTarget;
         }else if(valueShown === "burn"){

@@ -1,11 +1,11 @@
-import calculation from "../calculation/calculation";
+
 import moment from 'moment';
-import NewDay from "../pages/NewDay";
 
 const asyncParse = require("async-json-parse");
 
 const userVault = "aav-user";
 const dayDataVault = "aav-ddv";
+const dataUpdateVault = "aav-cdu";
 
 const vault = {
     getUser: () =>{
@@ -18,18 +18,36 @@ const vault = {
     saveUser:(userObj:any)=>{
         let uos = JSON.stringify(userObj);
         localStorage.setItem(userVault,uos);
+        vault.runVaultNotificationSystem();
+    },
+    updateUserWeight:(weight:string)=>{
+        let user = vault.getUser();
+        user.weight = weight;
+        let uos = JSON.stringify(user);
+        localStorage.setItem(userVault,uos);
+        vault.runVaultNotificationSystem();
     },
     initializeApp:()=>{
         if(localStorage.getItem(dayDataVault)){
             return;
         }
         localStorage.setItem(dayDataVault,JSON.stringify([]));
+        window.vaultListener = null;
+    },
+    setVaultNotifier:(myFunc:any)=>{
+        window.vaultListener = myFunc;
+    },
+    runVaultNotificationSystem:()=>{
+        if(window.vaultListener){
+            window.vaultListener();
+        }
     },
     reset:()=>{
         localStorage.clear();
     },
     clearDayLogs:()=>{
         localStorage.setItem(dayDataVault,JSON.stringify([]));
+        vault.runVaultNotificationSystem();
     },
     randomId:()=>{
         return `id-${Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)}`;
@@ -37,9 +55,11 @@ const vault = {
     addNewDay:async(newDay:newDay)=>{
         let dayLogs = await vault.getDayData();
         newDay.id = vault.randomId();
+        newDay.dateId = moment(newDay.dateTime).format("MM|DD|YYYY");
         dayLogs.push(newDay);
         let strungLogs = JSON.stringify(dayLogs);
         localStorage.setItem(dayDataVault,strungLogs);
+        vault.runVaultNotificationSystem();
         return dayLogs;
     },
     removeDay:async(removeId:string)=>{
@@ -47,6 +67,7 @@ const vault = {
         let filteredDayLogs = dayLogs.filter((u:newDay)=>u.id !== removeId);
         let strungLogs = JSON.stringify(filteredDayLogs);
         localStorage.setItem(dayDataVault,strungLogs);
+        vault.runVaultNotificationSystem();
         return filteredDayLogs;
     },
     getDayData:async()=>{
@@ -63,7 +84,7 @@ const vault = {
         }
         vault.clearDayLogs();
         let fakeLogs = [];
-        for(let i = 0; i < dataNum; i++){
+        for(let i = 1; i < dataNum; i++){
             fakeLogs.push({
                 id:vault.randomId(),
                 dateTime:moment(new Date()).subtract(i,"days").toDate(),
@@ -73,18 +94,21 @@ const vault = {
                 calsBurnedStairs:Math.round(Math.random() * (900-700) + 700),
                 weight:Math.round(Math.random() * (220 - 200) + 200),
                 dayOfTheWeek:moment(new Date()).subtract(i,"days").toDate().getDay(),
-                totalCaloriesBurned:Math.round(Math.random()*(1100-700)+700)
+                totalCaloriesBurned:Math.round(Math.random()*(1100-700)+700),
+                dateId:moment(new Date()).subtract(i,"days").format("MM|DD|YYYY")
             })
         }
         fakeLogs.reverse();
         let strungLogs = JSON.stringify(fakeLogs);
         localStorage.setItem(dayDataVault,strungLogs);
+        vault.runVaultNotificationSystem();
         return fakeLogs;
     }
 }
 
 interface newDay{
     id?:string;
+    dateId?:string;
     dateTime:Date;
     stairsClimbed:number;
     minutesSpentClimbing:number;

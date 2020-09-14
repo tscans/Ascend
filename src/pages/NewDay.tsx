@@ -60,7 +60,10 @@ class NewDay extends React.Component<MyProps>{
             dayOfTheWeek:(new Date()).getDay(),
             totalCaloriesBurned:stairsBurn + ec
         });
-        this.props.history.push("/home");
+        vault.updateUserWeight(this.getCurrentWeight().toString());
+        this.props.history.push({
+            pathname:"/home"
+        });
     }
     getTargetCalories = () =>{
         let {user} = this.state;
