@@ -4,14 +4,12 @@ import React from 'react';
 import './Home.css';
 import vault from '../vault/vault';
 import {RouteComponentProps} from 'react-router';
-import {add,personCircle} from 'ionicons/icons';
+import {personCircle} from 'ionicons/icons';
 import MainChart from '../components/MainChart';
 import WeekdayChart from '../components/WeekdayChart';
 import WeightBMI from '../components/WeightBMI';
 import DailyIntro from '../components/DailyIntro';
 import CalendarCard from '../components/CalendarCard';
-
-
 
 interface MyProps extends RouteComponentProps<{}> {}
 
@@ -51,7 +49,7 @@ class Home extends React.Component<MyProps>{
                     <DailyIntro data={ud}/>
                     <WeightBMI user={u}/>
                     <MainChart data={ud} />
-                    <CalendarCard />
+                    <CalendarCard data={ud}/>
                     <WeekdayChart data={ud}/>
                 </IonContent>
             </IonPage>

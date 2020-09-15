@@ -23,3 +23,12 @@
 .react-calendar__tile--now{
     background-color: #1C1C1D;
 }
+.react-calendar__tile abbr {
+    display: none;
+}
+.cc-pad{
+    padding:0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
