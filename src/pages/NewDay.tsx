@@ -68,7 +68,6 @@ class NewDay extends React.Component<MyProps>{
     getTargetCalories = () =>{
         let {user} = this.state;
         let u : any = user;
-        console.log(u)
         return calculation.targetCalories({
             gender:u.gender,
             weight:parseFloat(u.weight),
@@ -123,6 +122,9 @@ class NewDay extends React.Component<MyProps>{
                     
                     <IonCard>
                         <IonCardContent>
+                            <IonCardSubtitle>
+                                Calorie Target
+                            </IonCardSubtitle>
                             How close were you to this goal?
                         </IonCardContent>
                         <IonCardContent style={styles.tokenContent}>

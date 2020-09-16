@@ -1,19 +1,29 @@
 import React from 'react';
-import {IonCard,IonSegment,IonSegmentButton,IonLabel} from '@ionic/react';
+import {IonCard,IonSegment,IonSegmentButton,IonLabel,IonModal,
+IonButton} from '@ionic/react';
 import 'react-calendar/dist/Calendar.css';
 import './AdditionalCalendar.css';
 import moment from 'moment';
+import DayData from './DayData';
 const {Calendar} = require('react-calendar');
 
 interface MyProps{
     data:any;
 }
 
+const inverseMap : any = {
+    stairsClimbed:0,
+    calIntakeTarget:1,
+    totalCaloriesBurned:0
+};
+
 class CalendarCard extends React.Component<MyProps>{
     state = {
         date:new Date(),
         valueShown:"stairsClimbed",
-        monthView:(new Date()).getMonth()
+        monthView:(new Date()).getMonth(),
+        selectedDate:null,
+        openModal:false
     }
     changeDate = (date:Date)=>{
         this.setState({date});
@@ -30,7 +40,6 @@ class CalendarCard extends React.Component<MyProps>{
             acc.arr.push(curr);
             return acc;
         },{obj:{},arr:[]});
-        console.log(fdoa.arr)
         let minMax = fdoa.arr.reduce((acc:any,curr:any)=>{
             if(acc.min > curr[valueShown]){
                 acc.min = curr[valueShown];
@@ -41,6 +50,7 @@ class CalendarCard extends React.Component<MyProps>{
             return acc;
         },{min:1000000,max:0});
         return(
+            <>
             <IonCard style={{height:450}}>
                 <IonSegment 
                 onIonChange={e => this.setState({valueShown:e.detail.value})}
@@ -56,9 +66,8 @@ class CalendarCard extends React.Component<MyProps>{
                     </IonSegmentButton>
                 </IonSegment>
                 <Calendar 
-                    value={this.state.date}
                     showNeighboringMonth={false}
-                    onChange={this.changeDate}
+                    onClickDay={this.selectDate}
                     minDetail={"month"}
                     onActiveStartDateChange={({activeStartDate}:any)=>this.setState({
                         monthView:(activeStartDate).getMonth()
@@ -67,19 +76,26 @@ class CalendarCard extends React.Component<MyProps>{
                         let dateInfo = fdoa.obj[moment(date).format("MM|DD|YYYY")];
                         if(dateInfo){
                             let givenValue = dateInfo[valueShown];
-                            let normVal = (givenValue-minMax.min)/(minMax.max - minMax.min);
-                            let tokenColor = `hsla(${(180 - ((normVal)*180))},100%,70%,0.5)`;
+                            let normVal = Math.abs(inverseMap[valueShown] - ((givenValue-minMax.min)/
+                            (minMax.max - minMax.min)));
+                            let tokenColor = `hsla(${(180 - ((normVal)*180))},100%,50%,0.4)`;
                             return(
                                 <div style={{
                                     position:'relative',
                                     backgroundColor:tokenColor,
-                                    height:"100%",
-                                    width:"100%",
+                                    height:"90%",
+                                    width:"90%",
                                     display:'flex',
                                     justifyContent:'center',
                                     alignItems:'center'
                                 }}>
+                                    <div>
                                     {date.getDate()}
+                                    <br/>
+                                    <span style={styles.small}>
+                                        {dateInfo.weight}
+                                    </span>
+                                    </div>
                                 </div>
                             )
                         }
@@ -88,7 +104,30 @@ class CalendarCard extends React.Component<MyProps>{
                     tileClassName={"cc-pad"}
                 />
             </IonCard>
+            <IonModal isOpen={this.state.openModal} >
+                <DayData selectedDate={this.state.selectedDate}/>
+                <IonButton 
+                color={"secondary"}
+                onClick={() => this.setState({openModal:false})}>Close</IonButton>
+            </IonModal>
+            </>
         )
+    }
+    selectDate = (a:any) =>{
+        let {data} = this.props;
+        let dateId = moment(a).format("MM|DD|YYYY");
+        let foundDate = data.find((u:any)=>{
+            return u.dateId === dateId;
+        });
+        if(foundDate){
+            this.setState({selectedDate:foundDate,openModal:true});
+        }
+    }
+}
+
+const styles = {
+    small:{
+        fontSize:9
     }
 }
 

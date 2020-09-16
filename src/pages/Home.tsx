@@ -10,6 +10,7 @@ import WeekdayChart from '../components/WeekdayChart';
 import WeightBMI from '../components/WeightBMI';
 import DailyIntro from '../components/DailyIntro';
 import CalendarCard from '../components/CalendarCard';
+import TotalCard from '../components/TotalCard';
 
 interface MyProps extends RouteComponentProps<{}> {}
 
@@ -51,6 +52,7 @@ class Home extends React.Component<MyProps>{
                     <MainChart data={ud} />
                     <CalendarCard data={ud}/>
                     <WeekdayChart data={ud}/>
+                    <TotalCard />
                 </IonContent>
             </IonPage>
         )

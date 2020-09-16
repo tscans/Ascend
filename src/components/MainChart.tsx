@@ -1,7 +1,7 @@
 import React from 'react';
 import moment from 'moment';
 import {Bar} from 'react-chartjs-2';
-import {IonCard,IonCardContent} from '@ionic/react';
+import {IonCard,IonCardContent, IonCardSubtitle} from '@ionic/react';
 
 interface MyProps{
     data:any;
@@ -14,6 +14,9 @@ class MainChart extends React.Component<MyProps>{
         return(
             <IonCard>
                     <IonCardContent>
+                    <IonCardSubtitle style={{marginBottom:10}}>
+                        Weight and Calorie Target
+                    </IonCardSubtitle>
                         <Bar
                             data={barData}
                             options={options}
