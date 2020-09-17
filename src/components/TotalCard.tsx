@@ -1,8 +1,13 @@
 import React from 'react';
 import {IonCard} from '@ionic/react';
 
-class TotalCard extends React.Component{
+interface MyProps{
+    data:any;
+}
+
+class TotalCard extends React.Component<MyProps>{
     render(){
+        console.log(this.props.data);
         return(
             <IonCard>
                 Total Card

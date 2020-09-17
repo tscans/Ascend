@@ -1,18 +1,32 @@
 import React from 'react';
 import moment from 'moment';
 import {Bar} from 'react-chartjs-2';
-import {IonCard,IonCardContent, IonCardSubtitle} from '@ionic/react';
+import {IonCard,IonCardContent, IonCardSubtitle,
+IonSegmentButton,IonSegment,IonLabel} from '@ionic/react';
 
 interface MyProps{
     data:any;
 }
 
 class MainChart extends React.Component<MyProps>{
+    state = {
+        valueShown:"weightCal"
+    }
     render(){
         let barData = this.generateData();
         let options = this.generateOptions();
         return(
             <IonCard>
+                <IonSegment 
+                onIonChange={e => this.setState({valueShown:e.detail.value})}
+                value={this.state.valueShown}>
+                    <IonSegmentButton value="weightCal">
+            <IonLabel>Weight {"&"} Calorie Target</IonLabel>
+                        </IonSegmentButton>
+                        <IonSegmentButton value="weight">
+                            <IonLabel>Weight Only</IonLabel>
+                        </IonSegmentButton>
+                    </IonSegment>
                     <IonCardContent>
                     <IonCardSubtitle style={{marginBottom:10}}>
                         Weight and Calorie Target
@@ -41,6 +55,9 @@ class MainChart extends React.Component<MyProps>{
             colorPointData.push(this.citToColor(dcit));
             pointStyleData.push(this.citToSymbol(dcit));
         });
+        if(this.state.valueShown === "weight"){
+            calData = [];
+        }
         return {
             labels: labelData,
             datasets: [

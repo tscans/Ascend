@@ -42,7 +42,7 @@ class Home extends React.Component<MyProps>{
                     <IonHeader>
                         <IonToolbar>
                             <IonTitle>Ascend</IonTitle>
-                            <IonButtons slot="end">
+                            <IonButtons slot="end" onClick={this.toUserPage}>
                                 <IonIcon slot="icon-only" icon={personCircle} />
                             </IonButtons>
                         </IonToolbar>
@@ -52,7 +52,7 @@ class Home extends React.Component<MyProps>{
                     <MainChart data={ud} />
                     <CalendarCard data={ud}/>
                     <WeekdayChart data={ud}/>
-                    <TotalCard />
+                    <TotalCard data={ud}/>
                 </IonContent>
             </IonPage>
         )
@@ -71,6 +71,9 @@ class Home extends React.Component<MyProps>{
     }
     addDayData = () =>{
         this.props.history.push("/new-day");
+    }
+    toUserPage = () =>{
+        this.props.history.push("/user");
     }
 }
 

@@ -1,6 +1,7 @@
 import React from 'react';
-import {IonCard,IonCardContent,IonCardSubtitle,IonCardTitle,
+import {IonCard,IonCardContent,IonCardSubtitle,IonCardTitle,IonIcon
 } from '@ionic/react';
+import {arrowForwardOutline} from 'ionicons/icons';
 import calculation from '../calculation/calculation';
 
 interface MyProps {
@@ -22,14 +23,14 @@ class WeightBMI extends React.Component<MyProps>{
                         <IonCardTitle>{u.weight}<span style={styles.lbs}>lbs</span></IonCardTitle>
                     </div>
                     <div>
-                        <IonCardSubtitle>Target Weight</IonCardSubtitle>
-                        <IonCardTitle>{u.targetWeight}<span style={styles.lbs}>lbs</span></IonCardTitle>
-                    </div>
-                    <div>
                         <IonCardSubtitle>To Lose</IonCardSubtitle>
                         <IonCardTitle>
                             {parseFloat(u.weight) - parseFloat(u.targetWeight)}<span style={styles.lbs}>lbs</span>
                         </IonCardTitle>
+                    </div>
+                    <div>
+                        <IonCardSubtitle>Target Weight</IonCardSubtitle>
+                        <IonCardTitle>{u.targetWeight}<span style={styles.lbs}>lbs</span></IonCardTitle>
                     </div>
                 </IonCardContent>
                 <IonCardContent style={styles.flatEven}>
@@ -41,6 +42,11 @@ class WeightBMI extends React.Component<MyProps>{
                         <IonCardSubtitle><span style={{
                             color:bmie.color
                         }}>{bmie.evalu}</span></IonCardSubtitle>
+                    </div>
+                    <div style={{paddingTop:20}}>
+                        <IonIcon
+                        size="large"
+                        icon={arrowForwardOutline}/>
                     </div>
                     <div>
                         <IonCardSubtitle>Target BMI</IonCardSubtitle>

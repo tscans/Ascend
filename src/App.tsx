@@ -5,6 +5,7 @@ import { IonReactRouter } from '@ionic/react-router';
 import Home from './pages/Home';
 import Setup from './pages/Setup';
 import NewDay from './pages/NewDay';
+import User from './pages/User';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -33,6 +34,7 @@ class App extends React.Component{
                 <IonRouterOutlet>
                     <Route exact path="/" component={Setup} />
                     <Route exact path="/home" component={Home} />
+                    <Route exact path="/user" component={User} />
                     <Route exact path="/new-day" component={NewDay} />
                 </IonRouterOutlet>
                 </IonReactRouter>

@@ -1,9 +1,10 @@
 import React from 'react';
 import {IonCard,IonSegment,IonSegmentButton,IonLabel,IonModal,
-IonButton} from '@ionic/react';
+IonButton, IonContent, IonIcon} from '@ionic/react';
 import 'react-calendar/dist/Calendar.css';
 import './AdditionalCalendar.css';
 import moment from 'moment';
+import {createOutline} from 'ionicons/icons';
 import DayData from './DayData';
 const {Calendar} = require('react-calendar');
 
@@ -51,7 +52,7 @@ class CalendarCard extends React.Component<MyProps>{
         },{min:1000000,max:0});
         return(
             <>
-            <IonCard style={{height:450}}>
+            <IonCard style={{height:490}}>
                 <IonSegment 
                 onIonChange={e => this.setState({valueShown:e.detail.value})}
                 value={this.state.valueShown}>
@@ -65,6 +66,7 @@ class CalendarCard extends React.Component<MyProps>{
                         <IonLabel>Burned Calories</IonLabel>
                     </IonSegmentButton>
                 </IonSegment>
+                {this.renderLegend(minMax)}
                 <Calendar 
                     showNeighboringMonth={false}
                     onClickDay={this.selectDate}
@@ -105,12 +107,41 @@ class CalendarCard extends React.Component<MyProps>{
                 />
             </IonCard>
             <IonModal isOpen={this.state.openModal} >
-                <DayData selectedDate={this.state.selectedDate}/>
-                <IonButton 
-                color={"secondary"}
-                onClick={() => this.setState({openModal:false})}>Close</IonButton>
+                <IonContent>
+                    <DayData selectedDate={this.state.selectedDate}/>
+                    <IonButton 
+                    color={"light"}
+                    expand={"full"}
+                    onClick={() => this.setState({openModal:false})}>
+                        <IonIcon icon={createOutline} slot="start"/>
+                        Edit</IonButton>
+                    <IonButton 
+                    color={"primary"}
+                    expand={"full"}
+                    onClick={() => this.setState({openModal:false})}>Close</IonButton>
+                </IonContent>
             </IonModal>
             </>
+        )
+    }
+    renderLegend = (minMax:any) =>{
+        let {valueShown} = this.state;
+        let min = minMax.min;
+        let max = minMax.max;
+        if(inverseMap[valueShown] === 1){
+            max = minMax.min;
+            min = minMax.max;
+        }
+        return(
+            <div style={styles.legend}>
+                <div>
+                    {min.toFixed(0)}
+                </div>
+                <div style={styles.gradient}></div>
+                <div>
+                    {max.toFixed(0)}
+                </div>
+            </div>
         )
     }
     selectDate = (a:any) =>{
@@ -128,6 +159,22 @@ class CalendarCard extends React.Component<MyProps>{
 const styles = {
     small:{
         fontSize:9
+    },
+    gradient:{
+        background:`linear-gradient(to right, hsla(0,100%,50%,0.4),hsla(60,100%,50%,0.4),
+        hsla(120,100%,50%,0.4),hsla(180,100%,50%,0.4))`,
+        height:15,
+        width:70,
+        marginLeft:15,
+        marginRight:15
+    },
+    legend:{
+        height:40,
+        width:"100%",
+        display:'flex',
+        flex:1,
+        justifyContent:'center',
+        alignItems:'center'
     }
 }
 

@@ -5,7 +5,6 @@ const asyncParse = require("async-json-parse");
 
 const userVault = "aav-user";
 const dayDataVault = "aav-ddv";
-const dataUpdateVault = "aav-cdu";
 
 const vault = {
     getUser: () =>{
@@ -23,6 +22,13 @@ const vault = {
     updateUserWeight:(weight:string)=>{
         let user = vault.getUser();
         user.weight = weight;
+        let uos = JSON.stringify(user);
+        localStorage.setItem(userVault,uos);
+        vault.runVaultNotificationSystem();
+    },
+    updateUserTargetWeight:(targetWeight:string)=>{
+        let user = vault.getUser();
+        user.targetWeight = targetWeight;
         let uos = JSON.stringify(user);
         localStorage.setItem(userVault,uos);
         vault.runVaultNotificationSystem();
