@@ -3,6 +3,7 @@ import {IonCard,IonCardContent,IonCardSubtitle,IonCardTitle,IonIcon
 } from '@ionic/react';
 import {arrowForwardOutline} from 'ionicons/icons';
 import calculation from '../calculation/calculation';
+import moment from 'moment';
 
 interface MyProps {
     user:any;
@@ -15,6 +16,7 @@ class WeightBMI extends React.Component<MyProps>{
         let bmie = calculation.bmiEvaluation(bmi);
         let tbmi = calculation.bmiCalculation(parseInt(u.targetWeight),parseInt(u.height));
         let tbmie = calculation.bmiEvaluation(tbmi);
+        let compPoint = this.goalCompletionPoint();
         return(
             <IonCard>
                 <IonCardContent style={styles.flatEven}>
@@ -58,8 +60,32 @@ class WeightBMI extends React.Component<MyProps>{
                         }}>{tbmie.evalu}</span></IonCardSubtitle>
                     </div>
                 </IonCardContent>
+                {compPoint ? 
+                <IonCardContent style={styles.flatEven}>
+                    <div>
+                        <span style={styles.assume}>Assuming you follow the diet.</span><br/>
+                        <IonCardSubtitle>
+                            Reach Goal Weight On
+                        </IonCardSubtitle>
+                        <IonCardTitle>
+                            {compPoint}
+                        </IonCardTitle>
+                    </div>
+                </IonCardContent> : <></>}
             </IonCard>
         )
+    }
+    goalCompletionPoint = () =>{
+        const calorieDrop = 800;
+        const onePoundCals = 3500;
+        let currentWeight = parseInt(this.props.user.weight);
+        let targetWeight = parseInt(this.props.user.targetWeight);
+        let weightDiff = currentWeight - targetWeight;
+        if(weightDiff < 4){
+            return null;
+        }
+        let successfulDropDays = (weightDiff * onePoundCals) / calorieDrop;
+        return moment().add(successfulDropDays,"days").format("MMM Do YYYY")
     }
 }
 
@@ -71,6 +97,11 @@ const styles = {
     },
     lbs:{
         fontSize:12
+    },
+    assume:{
+        fontSize:10,
+        color:'gray',
+        fontStyle:'italic'
     }
 }
 

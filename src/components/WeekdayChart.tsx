@@ -1,6 +1,6 @@
 import React from 'react';
 import {Bar} from 'react-chartjs-2';
-import {IonCard,IonCardContent,IonSegment,IonSegmentButton,IonLabel} from '@ionic/react';
+import {IonCard,IonCardContent,IonSegment,IonSegmentButton,IonLabel, IonCardSubtitle} from '@ionic/react';
 
 interface MyProps{
     data:any;
@@ -29,6 +29,9 @@ class WeekdayChart extends React.Component<MyProps>{
                     </IonSegmentButton>
                 </IonSegment>
                 <IonCardContent>
+                    <IonCardSubtitle>
+                        Averages by Day
+                    </IonCardSubtitle>
                     <Bar
                         data={barData}
                         options={options}

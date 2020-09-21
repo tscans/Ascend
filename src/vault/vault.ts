@@ -1,4 +1,3 @@
-
 import moment from 'moment';
 
 const asyncParse = require("async-json-parse");
@@ -17,6 +16,18 @@ const vault = {
     saveUser:(userObj:any)=>{
         let uos = JSON.stringify(userObj);
         localStorage.setItem(userVault,uos);
+        vault.runVaultNotificationSystem();
+    },
+    updateValueOnLog: async (kind:string,value:any,id:string)=>{
+        let dayData : any = await vault.getDayData();
+        let logIndex = dayData.findIndex((d:any)=>{
+            if(d.id === id){
+                return true;
+            }
+        });
+        dayData[logIndex][kind] = value;
+        let strungLogs = JSON.stringify(dayData);
+        localStorage.setItem(dayDataVault,strungLogs);
         vault.runVaultNotificationSystem();
     },
     updateUserWeight:(weight:string)=>{

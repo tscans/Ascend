@@ -1,12 +1,26 @@
 import React from 'react';
-import {IonCard, IonCardContent, IonCardSubtitle, IonCardTitle} from '@ionic/react';
+import {IonCard, IonCardContent, IonAlert, IonCardTitle} from '@ionic/react';
 import moment from 'moment';
+import vault from '../vault/vault';
 
 interface MyProps {
     selectedDate:any;
 }
 
+const typeMap : any = {
+    weight:"number",
+    calIntakeTarget:"number",
+    calsBurnedStairs:"number",
+    minutesSpentClimbing:"number",
+    stairsClimbed:"number",
+    totalCaloriesBurned:"number"
+}
+
 class DayData extends React.Component<MyProps>{
+    state = {
+        editAlert:false,
+        editKind:""
+    }
     render(){
         if(!this.props.selectedDate){
             return <></>;
@@ -23,7 +37,7 @@ class DayData extends React.Component<MyProps>{
                     </IonCardTitle>
                 </IonCardContent>
             </IonCard>
-            <IonCard>
+            <IonCard onClick={()=>this.showEditAlert("weight")}>
                 <IonCardContent>
                     Weight
                     <IonCardTitle>
@@ -31,7 +45,7 @@ class DayData extends React.Component<MyProps>{
                     </IonCardTitle>
                 </IonCardContent>
             </IonCard>
-            <IonCard>
+            <IonCard onClick={()=>this.showEditAlert("calIntakeTarget")}>
                 <IonCardContent>
                     Calorie Intake Target
                     <IonCardTitle>
@@ -39,7 +53,7 @@ class DayData extends React.Component<MyProps>{
                     </IonCardTitle>
                 </IonCardContent>
             </IonCard>
-            <IonCard>
+            <IonCard onClick={()=>this.showEditAlert("calsBurnedStairs")}>
                 <IonCardContent>
                     Calories Burned on Stairs
                     <IonCardTitle>
@@ -47,7 +61,7 @@ class DayData extends React.Component<MyProps>{
                     </IonCardTitle>
                 </IonCardContent>
             </IonCard>
-            <IonCard>
+            <IonCard onClick={()=>this.showEditAlert("minutesSpentClimbing")}>
                 <IonCardContent>
                     Minutes Spent Climbing
                     <IonCardTitle>
@@ -55,7 +69,7 @@ class DayData extends React.Component<MyProps>{
                     </IonCardTitle>
                 </IonCardContent>
             </IonCard>
-            <IonCard>
+            <IonCard onClick={()=>this.showEditAlert("stairsClimbed")}>
                 <IonCardContent>
                     Stairs Climbed
                     <IonCardTitle>
@@ -63,7 +77,7 @@ class DayData extends React.Component<MyProps>{
                     </IonCardTitle>
                 </IonCardContent>
             </IonCard>
-            <IonCard>
+            <IonCard onClick={()=>this.showEditAlert("totalCaloriesBurned")}>
                 <IonCardContent>
                     Total Calories Burned
                     <IonCardTitle>
@@ -71,8 +85,47 @@ class DayData extends React.Component<MyProps>{
                     </IonCardTitle>
                 </IonCardContent>
             </IonCard>
+            <IonAlert
+                isOpen={this.state.editAlert}
+                onDidDismiss={this.hideEditAlert}
+                header={'Edit'}
+                inputs={[
+                    {
+                        name: 'value',
+                        type: 'text'
+                    }
+                ]}
+                buttons={[
+                    {
+                        text: 'Cancel',
+                        role: 'cancel'
+                    },
+                    {
+                        text: 'Ok',
+                        handler: ({value}:any) => {
+                            this.editPoint(value);
+                        }
+                    }
+                ]}
+                />
             </>
         )
+    }
+    editPoint = (value:any) =>{
+        if(!value){
+            return;
+        }
+        let sd : any = this.props.selectedDate;
+        sd[this.state.editKind] = typeMap[this.state.editKind] === "number" ? parseInt(value) : value;
+        if(sd[this.state.editKind]){
+            vault.updateValueOnLog(this.state.editKind,sd[this.state.editKind],sd.id);
+        }
+    }
+    showEditAlert = (editKind:string) =>{
+        this.setState({editAlert:true,editKind});
+    }
+    hideEditAlert = () =>{
+        this.setState({editAlert:false});
     }
     citToWord = (cit:number) =>{
         if(cit === 1){

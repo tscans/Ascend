@@ -6,6 +6,7 @@ import './AdditionalCalendar.css';
 import moment from 'moment';
 import {createOutline} from 'ionicons/icons';
 import DayData from './DayData';
+import { type } from 'os';
 const {Calendar} = require('react-calendar');
 
 interface MyProps{
@@ -13,9 +14,9 @@ interface MyProps{
 }
 
 const inverseMap : any = {
-    stairsClimbed:0,
-    calIntakeTarget:1,
-    totalCaloriesBurned:0
+    stairsClimbed:1,
+    calIntakeTarget:0,
+    totalCaloriesBurned:1
 };
 
 class CalendarCard extends React.Component<MyProps>{
@@ -110,12 +111,6 @@ class CalendarCard extends React.Component<MyProps>{
                 <IonContent>
                     <DayData selectedDate={this.state.selectedDate}/>
                     <IonButton 
-                    color={"light"}
-                    expand={"full"}
-                    onClick={() => this.setState({openModal:false})}>
-                        <IonIcon icon={createOutline} slot="start"/>
-                        Edit</IonButton>
-                    <IonButton 
                     color={"primary"}
                     expand={"full"}
                     onClick={() => this.setState({openModal:false})}>Close</IonButton>
@@ -135,11 +130,11 @@ class CalendarCard extends React.Component<MyProps>{
         return(
             <div style={styles.legend}>
                 <div>
-                    {min.toFixed(0)}
+                    {max.toFixed(0)}
                 </div>
                 <div style={styles.gradient}></div>
                 <div>
-                    {max.toFixed(0)}
+                    {min.toFixed(0)}
                 </div>
             </div>
         )

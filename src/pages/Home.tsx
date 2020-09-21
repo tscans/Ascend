@@ -1,16 +1,19 @@
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar,
-IonSpinner,IonFab,IonFabButton,IonIcon,IonButtons} from '@ionic/react';
+IonSpinner,IonIcon,IonButtons, IonButton} from '@ionic/react';
 import React from 'react';
 import './Home.css';
 import vault from '../vault/vault';
 import {RouteComponentProps} from 'react-router';
-import {personCircle} from 'ionicons/icons';
+import {personCircle,filterOutline} from 'ionicons/icons';
 import MainChart from '../components/MainChart';
 import WeekdayChart from '../components/WeekdayChart';
 import WeightBMI from '../components/WeightBMI';
 import DailyIntro from '../components/DailyIntro';
 import CalendarCard from '../components/CalendarCard';
 import TotalCard from '../components/TotalCard';
+import FastWindow from '../components/FastWindow';
+import FilterModal from '../components/FilterModal';
+import FAQ from '../components/FAQ';
 
 interface MyProps extends RouteComponentProps<{}> {}
 
@@ -18,7 +21,10 @@ class Home extends React.Component<MyProps>{
     state = {
         userInfo:null,
         userData:null,
-        dataPullTag:""
+        dataPullTag:"",
+        showFilterModal:false,
+        filterLogs:[1,30],
+        faqModal:false
     }
     componentDidMount(){
         this.getAllData();
@@ -36,6 +42,21 @@ class Home extends React.Component<MyProps>{
         }
         let u : any = this.state.userInfo;
         let ud : any = this.state.userData;
+        let fud : any = ud;
+        let {showFilterModal,faqModal} = this.state;
+        let filterLogs : any = this.state.filterLogs;
+        if(filterLogs){
+            let left = filterLogs[0];
+            let right = filterLogs[1];
+            fud = ud.filter((u:any,i:number)=>{
+                let rp = (ud.length - 1) - i;
+                if(rp >= (left - 1) && rp <= (right - 1)){
+                    return true;
+                }
+                return false;
+            });
+        }
+        let isFilterable = ud.length >= 15;
         return(
             <IonPage>
                 <IonContent fullscreen>
@@ -45,14 +66,37 @@ class Home extends React.Component<MyProps>{
                             <IonButtons slot="end" onClick={this.toUserPage}>
                                 <IonIcon slot="icon-only" icon={personCircle} />
                             </IonButtons>
+                            {
+                                isFilterable ? 
+                                <IonButtons slot="start" onClick={this.launchFilter}>
+                                    <IonIcon slot="icon-only" icon={filterOutline} />
+                                </IonButtons>
+                                :
+                                <></>
+                            }
+                            
                         </IonToolbar>
                     </IonHeader>
                     <DailyIntro data={ud}/>
+                    <FastWindow />
                     <WeightBMI user={u}/>
-                    <MainChart data={ud} />
-                    <CalendarCard data={ud}/>
-                    <WeekdayChart data={ud}/>
+                    <MainChart data={fud} />
+                    <CalendarCard data={fud}/>
+                    <WeekdayChart data={fud}/>
                     <TotalCard data={ud}/>
+
+                    <FilterModal 
+                    data={ud}
+                    filterLogs={this.filterLogs}
+                    closeFilter={this.closeFilter}
+                    showFilterModal={showFilterModal}/>
+                    <IonButton
+                    expand={"full"}
+                    onClick={this.launchFAQ}
+                    >
+                        FAQ
+                    </IonButton>
+                    <FAQ faqModal={faqModal} closeFAQModal={this.closeFAQModal}/>
                 </IonContent>
             </IonPage>
         )
@@ -74,6 +118,21 @@ class Home extends React.Component<MyProps>{
     }
     toUserPage = () =>{
         this.props.history.push("/user");
+    }
+    launchFilter = () =>{
+        this.setState({showFilterModal:true});
+    }
+    closeFilter = () =>{
+        this.setState({showFilterModal:false});
+    }
+    filterLogs = (filterLogs:any) =>{
+        this.setState({filterLogs});
+    }
+    launchFAQ = () =>{
+        this.setState({faqModal:true});
+    }
+    closeFAQModal = () =>{
+        this.setState({faqModal:false});
     }
 }
 

@@ -112,10 +112,10 @@ class NewDay extends React.Component<MyProps>{
                         </IonCard>
                         <IonCard  style={{width:"50%"}}>
                             <IonCardContent>
-                                Today's Stair Step Goal
+                                Today's Calorie Burn Goal
                             </IonCardContent>
                             <IonCardHeader style={{textAlign:'center',paddingTop:0}}>
-                                <IonCardTitle>1000</IonCardTitle>
+                                <IonCardTitle>300</IonCardTitle>
                             </IonCardHeader>
                         </IonCard>
                     </div>
