@@ -1,5 +1,3 @@
-import { parse } from "path";
-
 const minimumCalories = 1200;
 const caloricDifferential = 500;
 

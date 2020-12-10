@@ -1,6 +1,5 @@
 import React from 'react';
-import {IonCard,IonButton,IonCardTitle, IonCardContent,
-IonCardSubtitle} from '@ionic/react';
+import {IonCard,IonButton,IonCardTitle, IonCardContent} from '@ionic/react';
 import moment from 'moment';
 import {RouteComponentProps,withRouter} from 'react-router';
 
@@ -46,17 +45,5 @@ class DailyIntro extends React.Component<MyProps>{
         return null;
     }
 }
-
-const styles = {
-    flatEven:{
-        display:'flex',
-        flexDirection:'row',
-        justifyContent:'space-between'
-    },
-    lbs:{
-        fontSize:12
-    }
-}
-
 
 export default withRouter(DailyIntro);

@@ -24,6 +24,7 @@ const vault = {
             if(d.id === id){
                 return true;
             }
+            return false;
         });
         dayData[logIndex][kind] = value;
         let strungLogs = JSON.stringify(dayData);

@@ -1,12 +1,10 @@
 import React from 'react';
 import {IonCard,IonSegment,IonSegmentButton,IonLabel,IonModal,
-IonButton, IonContent, IonIcon} from '@ionic/react';
+IonButton, IonContent} from '@ionic/react';
 import 'react-calendar/dist/Calendar.css';
 import './AdditionalCalendar.css';
 import moment from 'moment';
-import {createOutline} from 'ionicons/icons';
 import DayData from './DayData';
-import { type } from 'os';
 const {Calendar} = require('react-calendar');
 
 interface MyProps{
@@ -37,6 +35,7 @@ class CalendarCard extends React.Component<MyProps>{
             if(new Date(obj.dateTime).getMonth() === this.state.monthView){
                 return true;
             }
+            return false;
         }).reduce((acc:any,curr:any)=>{
             acc.obj[curr.dateId] = curr;
             acc.arr.push(curr);
