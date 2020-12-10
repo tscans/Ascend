@@ -20,6 +20,7 @@ class DailyIntro extends React.Component<MyProps>{
                             Record Today
                         </IonCardTitle>
                         Be sure to record often for the best metrics.
+                        <br/>
                         <IonButton style={{marginTop:10}} 
                         onClick={this.toRecord}
                         color="primary">

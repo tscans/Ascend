@@ -196,8 +196,10 @@ class User extends React.Component<MyProps>{
         this.setState({userData});
     }
     deleteProfile = () =>{
+        vault.clearDayLogs();
         vault.reset();
         vault.initializeApp();
+        vault.runVaultNotificationSystem();
         this.props.history.push("");
     }
     deleteWorkouts = () =>{
